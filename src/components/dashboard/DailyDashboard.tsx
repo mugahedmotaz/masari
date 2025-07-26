@@ -1,16 +1,10 @@
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Calendar, 
-  CheckCircle2, 
-  Target, 
-  TrendingUp, 
-  Flame,
-  Brain,
-  Clock
-} from "lucide-react";
+
+import { Calendar, CheckCircle2, Target, TrendingUp, Flame, Brain, Clock, PlusCircle } from "lucide-react";
 
 interface Goal {
   id: string;
@@ -23,9 +17,11 @@ interface Goal {
 interface DailyDashboardProps {
   goals: Goal[];
   onGoalClick: (goal: Goal) => void;
+  onAddGoal: () => void;
+  onStartReview: () => void;
 }
 
-const DailyDashboard = ({ goals, onGoalClick }: DailyDashboardProps) => {
+const DailyDashboard = ({ goals, onGoalClick, onAddGoal, onStartReview }: DailyDashboardProps) => {
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -58,141 +54,170 @@ const DailyDashboard = ({ goals, onGoalClick }: DailyDashboardProps) => {
   const dailyQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-            Good morning! 🌅
-          </h1>
-          <p className="text-muted-foreground">{today}</p>
-        </div>
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="text-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          مرحباً بعودتك! 🎆
+        </h1>
+        <p className="text-gray-600 dark:text-gray-300">{new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="shadow-soft">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Overall Progress</p>
-                  <p className="text-2xl font-bold">{overallProgress}%</p>
-                </div>
-                <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-primary-foreground" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-soft">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Current Streak</p>
-                  <p className="text-2xl font-bold">{streak} days</p>
-                </div>
-                <div className="w-12 h-12 bg-gradient-warm rounded-full flex items-center justify-center">
-                  <Flame className="w-6 h-6 text-warning-foreground" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-soft">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Tasks Completed</p>
-                  <p className="text-2xl font-bold">{tasksCompleted}</p>
-                </div>
-                <div className="w-12 h-12 bg-gradient-success rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-success-foreground" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Daily Motivation */}
-        <Card className="shadow-soft border-l-4 border-l-primary">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center">
-                <Brain className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Daily Motivation</h3>
-                <p className="text-muted-foreground">{dailyQuote}</p>
-              </div>
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">الأهداف النشطة</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeGoals.length}</p>
             </div>
-          </CardContent>
-        </Card>
+            <Target className="w-8 h-8 text-blue-500" />
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">نسبة الإنجاز</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{overallProgress}%</p>
+            </div>
+            <TrendingUp className="w-8 h-8 text-green-500" />
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">سلسلة الإنجاز</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{streak}</p>
+            </div>
+            <Flame className="w-8 h-8 text-orange-500" />
+          </div>
+        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">مهام منجزة</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasksCompleted}</p>
+            </div>
+            <CheckCircle2 className="w-8 h-8 text-purple-500" />
+          </div>
+        </div>
+      </div>
 
-        {/* Today's Focus */}
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Today's Focus
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {todaysFocus.length === 0 ? (
-              <div className="text-center py-8">
-                <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No active goals. Create your first goal to get started!</p>
+      {/* Daily Motivation */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <Brain className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">إلهام اليوم</h3>
+            <p className="text-gray-700 dark:text-gray-300">{dailyQuote}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Today's Goals */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <Target className="w-6 h-6 text-blue-500" />
+            أهداف اليوم
+          </h2>
+          <Link
+            to="/create-goal"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+          >
+            <PlusCircle className="w-4 h-4" />
+            هدف جديد
+          </Link>
+        </div>
+        
+        {todaysFocus.length === 0 ? (
+          <div className="text-center py-12">
+            <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">لا توجد أهداف نشطة</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">ابدأ بإضافة هدفك الأول لتحقيق النجاح!</p>
+            <Link
+              to="/create-goal"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              إضافة هدف جديد
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {todaysFocus.map((goal) => (
+              <div
+                key={goal.id}
+                onClick={() => onGoalClick(goal)}
+                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-600"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-medium text-gray-900 dark:text-white">{goal.title}</h4>
+                  <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                    {goal.category}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                    <span>التقدم</span>
+                    <span>{goal.progress || 0}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                    <div
+                      className="bg-blue-500 h-2 rounded-full transition-all"
+                      style={{ width: `${goal.progress || 0}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {todaysFocus.map((goal) => (
-                  <Card key={goal.id} className="cursor-pointer hover:shadow-primary transition-shadow" onClick={() => onGoalClick(goal)}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium">{goal.title}</h4>
-                        <Badge variant="outline">{goal.category}</Badge>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Progress</span>
-                          <span>{goal.progress || 0}%</span>
-                        </div>
-                        <Progress value={goal.progress || 0} className="h-2" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        )}
+      </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="shadow-soft">
-            <CardContent className="p-6 text-center">
-              <Calendar className="w-8 h-8 text-primary mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">Weekly Review</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Review your progress and plan for the week ahead
-              </p>
-              <Button variant="outline" size="sm">
-                Start Review
-              </Button>
-            </CardContent>
-          </Card>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+          <CheckCircle2 className="w-12 h-12 text-blue-500 mx-auto mb-4" />
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">إدارة المهام</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            نظم مهامك اليومية وحقق أهدافك
+          </p>
+          <Link
+            to="/tasks"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            عرض المهام
+          </Link>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+          <Calendar className="w-12 h-12 text-purple-500 mx-auto mb-4" />
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">مراجعة أسبوعية</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            راجع تقدمك وخطط للأسبوع القادم
+          </p>
+          <Link
+            to="/weekly-review"
+            className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            بدء المراجعة
+          </Link>
+        </div>
 
-          <Card className="shadow-soft">
-            <CardContent className="p-6 text-center">
-              <Target className="w-8 h-8 text-success mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">Add New Goal</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Ready to take on a new challenge?
-              </p>
-              <Button variant="success" size="sm">
-                Create Goal
-              </Button>
-            </CardContent>
-          </Card>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+          <Target className="w-12 h-12 text-green-500 mx-auto mb-4" />
+          <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">هدف جديد</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            مستعد لتحدي جديد؟
+          </p>
+          <Link
+            to="/create-goal"
+            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            إضافة هدف
+          </Link>
         </div>
       </div>
     </div>

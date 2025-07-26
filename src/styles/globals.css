@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Cairo:wght@400;700&display=swap');
+
+:root {
+  /* Primary Modern Colors */
+  --primary: 225 100% 60%; /* Blue accent */
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 225 100% 80%;
+  --secondary: 265 60% 60%; /* Purple accent */
+  --secondary-foreground: 0 0% 100%;
+  --success: 140 60% 45%;
+  --success-foreground: 0 0% 100%;
+  --warning: 40 90% 60%;
+  --warning-foreground: 0 0% 0%;
+  --destructive: 0 80% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --muted: 210 16% 90%;
+  --muted-foreground: 220 10% 40%;
+  --accent: 48 100% 67%;
+  --accent-foreground: 0 0% 10%;
+  --background: 220 16% 98%;
+  --foreground: 220 12% 10%;
+  --border: 220 16% 90%;
+  --input: 220 16% 94%;
+  --ring: 225 100% 60%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 12% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 12% 10%;
+  --sidebar-background: 225 28% 15%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 225 100% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 265 60% 60%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 225 28% 25%;
+  --sidebar-ring: 225 100% 60%;
+  --radius: 16px;
+
+  font-family: 'Inter', 'Cairo', sans-serif;
+}
+
+.dark {
+  --background: 225 15% 10%;
+  --foreground: 0 0% 100%;
+  --card: 225 15% 14%;
+  --card-foreground: 0 0% 100%;
+  --popover: 225 15% 12%;
+  --popover-foreground: 0 0% 100%;
+  --border: 225 15% 24%;
+  --input: 225 15% 18%;
+  --ring: 225 100% 60%;
+  --sidebar-background: 225 15% 8%;
+  --sidebar-foreground: 0 0% 100%;
+  --muted: 225 15% 20%;
+  --muted-foreground: 225 10% 70%;
+}
+
+body {
+  font-family: 'Inter', 'Cairo', sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: background 0.3s, color 0.3s;
+}

@@ -3,6 +3,10 @@ import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import CreateGoalForm from '@/components/goals/CreateGoalForm';
 import TimelineView from '@/components/timeline/TimelineView';
 import DailyDashboard from '@/components/dashboard/DailyDashboard';
+import WeeklyReviewPage from './WeeklyReviewPage';
+import MainLayout from '@/components/layout/MainLayout';
+import { useNavigate } from 'react-router-dom';
+import BackButton from '@/components/ui/BackButton';
 
 interface Goal {
   id: string;
@@ -17,9 +21,10 @@ interface Goal {
   progress?: number;
 }
 
-type AppView = 'onboarding' | 'dashboard' | 'timeline' | 'create-goal';
+type AppView = 'onboarding' | 'dashboard' | 'timeline' | 'create-goal' | 'weekly-review';
 
 const AppContent = () => {
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<AppView>('onboarding');
   const [goals, setGoals] = useState<Goal[]>([]);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -87,31 +92,43 @@ const AppContent = () => {
     case 'onboarding':
       return <OnboardingFlow onComplete={handleOnboardingComplete} />;
     
+    case 'weekly-review':
+      return (
+        <MainLayout>
+          <WeeklyReviewPage />
+        </MainLayout>
+      );
+    
     case 'create-goal':
       return (
-        <CreateGoalForm
-          onGoalCreated={handleGoalCreated}
-          onCancel={handleCancelGoalForm}
-          editingGoal={editingGoal}
-        />
+        <MainLayout>
+          <BackButton className="mb-4" />
+          <CreateGoalForm onGoalCreated={handleGoalCreated} editingGoal={editingGoal} onCancel={handleCancelGoalForm} />
+        </MainLayout>
       );
     
     case 'timeline':
       return (
-        <TimelineView
-          goals={goals}
-          onAddGoal={handleAddGoal}
-          onEditGoal={handleEditGoal}
-        />
+        <MainLayout>
+          <TimelineView goals={goals} onAddGoal={handleAddGoal} onEditGoal={handleEditGoal} />
+        </MainLayout>
       );
     
     case 'dashboard':
     default:
       return (
-        <DailyDashboard
-          goals={goals}
-          onGoalClick={handleGoalClick}
-        />
+        <MainLayout>
+          <div className="flex justify-end p-4">
+          </div>
+          <DailyDashboard
+            goals={goals}
+            onGoalClick={handleGoalClick}
+            onAddGoal={handleAddGoal}
+            onStartReview={() => {
+              setCurrentView('weekly-review');
+            }}
+          />
+        </MainLayout>
       );
   }
 };

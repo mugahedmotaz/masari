@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, CheckCircle, Circle, Edit, Plus } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 interface Goal {
   id: string;
@@ -24,6 +25,7 @@ interface TimelineViewProps {
 }
 
 const TimelineView = ({ goals, onAddGoal, onEditGoal }: TimelineViewProps) => {
+  const navigate = useNavigate();
   const getCategoryColor = (category: string) => {
     const colors = {
       'Learning': 'bg-blue-100 text-blue-800',
@@ -106,7 +108,25 @@ const TimelineView = ({ goals, onAddGoal, onEditGoal }: TimelineViewProps) => {
                   {/* Timeline dot */}
                   <div className="absolute left-6 w-4 h-4 bg-gradient-primary rounded-full shadow-primary z-10"></div>
                   
-                  <Card className="ml-16 shadow-soft hover:shadow-primary transition-shadow cursor-pointer" onClick={() => onEditGoal(goal)}>
+                  <Card className="ml-16 shadow-soft hover:shadow-primary transition-shadow cursor-pointer">
+  <div className="absolute right-4 top-4 z-20">
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={e => {
+        e.stopPropagation();
+        navigate('/course-goal', { state: {
+          id: goal.id,
+          title: goal.title,
+          description: goal.description,
+          instructor: goal.category === 'Learning' ? 'محاضر افتراضي' : '',
+          duration: 'ساعتان',
+          thumbnail: 'https://img-c.udemycdn.com/course/240x135/1565838_e54e_16.jpg',
+          sourceUrl: 'https://www.udemy.com/',
+        }});
+      }}
+    >عرض الكورس</Button>
+  </div>
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
